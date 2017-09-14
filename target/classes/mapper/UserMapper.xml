@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cc.guoxingnan.mixinan.dao.UserDao">
+	<insert id="regist" parameterType="cc.guoxingnan.mixinan.entity.User">
+		insert into mi_user values
+			(
+			null,
+			#{mi_user_name},
+			#{mi_user_password},
+			#{mi_user_gender},
+			#{mi_user_nickname},
+			#{mi_user_create_time})
+	</insert>
+	
+	<select id="check" parameterType="Map" resultType="cc.guoxingnan.mixinan.entity.User">
+		select * from mi_user where mi_user_name=#{name} and mi_user_password=#{password}
+	</select>
+	
+	<select id="getUserById" parameterType="int" resultType="cc.guoxingnan.mixinan.entity.User">
+		select * from mi_user where mi_user_id=#{userId}
+	</select>
+	
+	<select id="checkNameUsed" parameterType="String" resultType="int">
+		select count(*) from mi_user where mi_user_name=#{userName} limit 1
+	</select>
+</mapper>

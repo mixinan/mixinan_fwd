@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>前端词汇PK</title>
+    <style>
+        body {margin: 0;text-align: center}
+        h1 {padding: 20px 0;text-align: center;margin: 0 0 15px 0;background: linear-gradient(to bottom,#fff,#999 96%, #ddd);letter-spacing:5px;}
+        h1>span{letter-spacing: 0;}
+        #blackboard {width: 80%;min-height: 300px;margin: 20px auto;line-height: 300px;
+            font-size: 200px;text-shadow: 3px 2px 6px gray;}
+        #thisIndex {display: inline-block;width: 30px;font-weight: bold;
+            color: #ff2a00;padding: 0 5px;}
+        #thisTime {display: inline-block;width: 30px;padding: 0 5px;}
+        #info {font-size: 30px;padding: 0;margin: 0;}
+        #blackboard > div {font-size: 80px;text-shadow: 3px 2px 5px gray;}
+        #bt {font-size: 30px;border-radius: 10px;animation: huxi 2s linear infinite alternate;}
+
+        @keyframes huxi{
+            from {background-color: gray; padding:10px 20px; }
+            to {background-color: cornflowerblue;padding:10px 25px;}
+        }
+    </style>
+</head>
+<body>
+<h1>前端英语词汇量<span>PK</span></h1>
+
+<p id="info" style="display: none">第 <span id="thisIndex">1</span> 题 - 剩余<span id="thisTime">5</span>s</p>
+<div id="blackboard">
+    <div>天下武功 唯快不破</div>
+</div>
+<p id="tip" style="text-align: center;display: none;">
+    可通过 <i>F12 - Console - 右键“Sava as...”</i>导出本次题目内容<br/><br/>
+    <a href="http://weibo.com/hejinfriend" target="_blank">微博</a>&nbsp;&nbsp;
+    <a href="tencent://Message/?Uin=1503924553" title="点击聊一聊">作者-万码千钧</a>&nbsp;&nbsp;
+    <a href="http://guoxingnan.cc" target="_blank">建议</a>
+</p>
+<button id="bt">开始</button>
+<script>
+    var arr = ["width", "height", "padding", "外边距", "left",
+        "bottom", "top", "right", "element", "shadow",
+        "block", "background", "display", "style", "flex",
+        "align", "border", "solid", "action", "form",
+        "row", "column", "表格", "image", "method",
+        "target", "random", "reset", "submit", "checkbox",
+        "animate", "title", "head", "bold", "下划线",
+        "font", "size", "italic", "middle", "center",
+        "caption", "input", "option", "select", "link",
+        "prompt", "alert", "document", "false", "write",
+        "var", "number", "数组", "function", "bug",
+        "math", "join", "reverse", "排序", "string",
+        "date", "object", "property", "length", "round",
+        "ceil", "floor", "window", "screen", "position",
+        "absolute", "relative", "浮动", "history", "location",
+        "replace", "value", "alpha", "黑色", "child",
+        "parent", "node", "sibling", "circle", "square",
+        "auto", "both", "cursor", "decoration", "fixed",
+        "hover", "justify", "navigation", "pointer", "repeat",
+        "scroll", "lowercase", "normal", "overflow", "progress"];
+
+    //初始值：题目序号，题目总数，剩余时间
+    var idx = 1, all = arr.length, i = 5;
+    //还未结束？
+    var unFinish = true;
+    console.log('共 '+all+' 题');
+    //定时器序号
+    var timer;
+
+    var blackboard = document.getElementById('blackboard');
+    var info = document.getElementById('info');
+    var thisIndex = document.getElementById('thisIndex');
+    var thisTime = document.getElementById('thisTime');
+    var bt = document.getElementById('bt');
+
+    bt.addEventListener('click', function () {
+        info.style.display = "block";
+        bt.style.display = "none";
+        go();
+        timer = setInterval(go, 1000);
+    });
+
+    //定时器里执行的方法
+    function go() {
+        if(i==5){
+            thisIndex.innerHTML = idx;
+            var randomNum = parseInt(Math.random() * arr.length);
+            var word = arr[randomNum];
+            arr.splice(randomNum, 1);
+            //根据是否结束，在控制台打印不同内容
+            unFinish = idx<=all;
+            console.log( unFinish ? (idx+" : "+word) : '答题结束！');
+
+            if (unFinish) {
+                blackboard.innerHTML = word;
+            } else {
+                blackboard.innerHTML = "没了";
+                info.style.display = "none";
+                clearInterval(timer);  //清除定时器
+                document.querySelector("#tip").style.display = "block";
+            }
+            idx++;
+        }
+        thisTime.innerHTML = i;
+        i--;
+        if(i==0) i=5;
+    }
+</script>
+</body>
+</html>

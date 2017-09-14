@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>饺子联盟</title>
+<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="js/cookie_util.js"></script>
+<script type="text/javascript" src="js/const.js"></script>
+<script type="text/javascript" src="js/blog.js"></script>
+<script type="text/javascript" src="js/user.js"></script>
+<style>
+	ul{
+	   list-style:none;
+	}
+	ul.pager>li{
+		display:inline-block;
+	}
+</style>
+</head>
+<body>
+	<b id="logo" style="cursor:pointer">饺子联盟</b>
+	
+	<!-- 搜索部分 -->
+	<input placeholder="输入关键字" id="kw"> <button id="bt_search">搜索</button>
+
+	<span id="user_name">user name</span> 
+	<a id="logout" href="javascript:logout()">退出</a>
+		
+	<p id="input_parent">
+		<textarea rows="4" cols="48" id="blogText" placeholder="请输入blogText"></textarea>
+		<button id="bt_send">发送</button>
+	</p>
+	
+	<ul id="blog_list">
+	
+	
+		<!-- blog列表, ajax填充 -->
+		
+	</ul>
+	
+	
+	
+	<ul class="pager">
+		
+		<!-- 总条数/每页条数，有余数的话+1 
+			<li><a href="#">1</a></li>
+		
+			ajax得到总数，计算页数，遍历得到一系列按钮
+		-->
+		
+		
+	</ul>
+	
+	<script>
+	
+	//退出
+	var logout = function(){
+		delCookie("userName");
+		delCookie("userId");
+		delCookie("nickname");
+		window.location.href="login.html";
+	}
+	
+	
+	
+	$(function(){
+		
+		//盛放blog列表的ul容器
+		var $list = $("#blog_list");
+		
+		//点击logo，刷新页面
+		$("#logo").click(function(){location.reload()});
+		
+		
+		
+		//获取用户信息
+		var userName = getCookie("userName");
+		var userId = getCookie("userId");
+		var nickname = getCookie("nickname");
+		
+		
+		//如果没登录，只显示blogs，不显示“输入框和发送按钮”
+		if(userId==null){
+			$("#input_parent").hide();
+			$("#logout").html("登录");
+		}
+		
+		
+		
+		//在顶部显示用户名
+		$("#user_name").html(nickname);
+		
+		
+		//默认加载第一页的blogs,10条
+		//也可以自定义参数  (1,10)
+		getBlogsByPage();
+		
+		
+		//执行：得到所有页数，显示页数链接，此方法封装在 blog.js
+		getPages();
+		
+		//点击按钮，发送内容到数据库，addBlog()封装在blog.js
+		$("#bt_send").click(addBlog);
+		
+		
+		/*
+		 * 通过  $("ul.pager") 给 页数 添加点击事件
+		 * */
+		$("ul.pager").on("click","li a",function(e){
+			e.preventDefault();
+			var pageno = parseInt($(this).html());
+			console.log(pageno);
+			//清空容器
+			$list.html("");
+			getBlogsByPage(pageno);
+		});
+		
+		
+		
+		
+		//点击搜索按钮
+		$("#bt_search").click(function(){
+			//获取参数kw
+			var $kw = $("#kw");
+			var kw = $kw.val().trim();
+			if (kw==""||kw==null) {
+				kw="口碑";
+			}
+			console.log("keyword: "+kw);
+			
+			$.ajax({
+				type:"post",
+				url:path+"/blog/search.do",
+				data:{"kw":kw},
+				dataType:"json",
+				success:function(result){
+					$list.html("");
+					
+					var list=result.data;
+					var listSize = list.length;
+					
+					console.log(result.status);
+					console.log(result.msg);
+					
+					for(var i=0;i<listSize;i++){
+						var blog = list[i];
+						console.log(blog.mi_blog_text);
+						var userId = blog.mi_user_id;
+						var nickname = getUserById(userId);
+						
+						$li = $("<li>"+nickname+":<br>"+blog.mi_blog_text+"<br>"+blog.mi_blog_create_time+"</li><br>");
+						
+						// 将blogId绑定在 $li（注意：jQuery对象）上
+						$li.data("blogId", blog.mi_blog_id);
+						
+						$list.prepend($li);
+					}
+					//console.log(result.data);
+					//搜索完毕后，清空输入框内容
+					//$kw.val("");
+				},
+				error:function(result){
+					console.log(result.status);
+					console.log(result.msg);
+					console.log(result.data);
+				}
+			});
+			
+		});
+		
+		
+		
+	});
+		
+	</script>
+</body>
+</html>

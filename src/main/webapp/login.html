@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>饺子联盟-登录</title>
+		<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
+		<script type="text/javascript" src="js/const.js"></script>
+		<script type="text/javascript" src="js/cookie_util.js"></script>
+	</head>
+	<body>
+		<div id="login_form">
+			<input id="input_name" placeholder="请输入账号" /><span id="name_span"></span><br />
+			<input id="input_password" placeholder="请输入密码" /><span id="password_span"></span>
+			<br />
+			<button id="bt_login">登录</button>
+			<button id="bt_regist" onclick="javascript:window.location.href='regist.html';">注册</button>
+			<button onclick="javascript:window.location.href='index.html';">游客</button>
+		</div>
+		
+		<script type="text/javascript">
+			var name="";
+			var password="";
+			//验证表单
+			var ok_name=false;
+			var ok_password=false;
+			//验证账号
+			$("#input_name").blur(function(){
+				name = $(this).val().trim();
+				if(name==""){
+					$("#name_span").html("不能为空");
+					ok_name=false;
+				}else{
+					$("#name_span").html("");
+					ok_name=true;
+				}
+			});
+			
+			//验证密码
+			$("#input_password").blur(function(){
+				password = $(this).val().trim();
+				if(password==""){
+					$("#password_span").html("不能为空");
+					ok_password=false;
+				}else{
+					$("#password_span").html("");
+					ok_password=true;
+				}
+			});
+			
+		
+			//点击登录按钮，发请求
+			$("#bt_login").click(function(){
+				if(ok_name && ok_password){
+					//获取参数 name  password
+					//发送ajax请求
+					$.ajax({
+						type:"post",
+						url:path+"/user/login.do",
+						data:{"name":name,"password":password},
+						dataType:"json",
+						success:function(result){
+							
+							if (result.status==0) {
+								addCookie("userName",result.data.mi_user_name);
+								addCookie("userId",result.data.mi_user_id);
+								addCookie("nickname",result.data.mi_user_nickname);
+								console.log("nickname:"+result.data.mi_user_nickname);
+								window.location.href="index.html";
+							}else if (result.status==1) {
+								alert(result.msg);
+							}
+						},
+						error:function(){
+							alert("登录失败");
+						}
+					});
+				}else{
+					alert("还没填好吧？");
+				}
+			});
+		</script>
+	</body>
+</html>

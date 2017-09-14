@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cc.guoxingnan.mixinan.dao.BlogDao">
+	
+
+
+	<insert id="addBlog" parameterType="cc.guoxingnan.mixinan.entity.Blog">
+		insert into mi_blog(mi_user_id,mi_blog_text,mi_blog_create_time) values
+			(#{mi_user_id},
+			#{mi_blog_text},
+			#{mi_blog_create_time})
+	</insert>
+	
+	
+	<!-- 点赞+1 -->
+	<update id="like" parameterType="int">
+		update mi_blog set
+			mi_blog_like_times=mi_blog_like_times+1
+			where mi_blog_id=#{blogId}
+	</update>
+	 
+	 
+	<select id="getBlogByBlogId" parameterType="int" resultType="cc.guoxingnan.mixinan.entity.Blog">
+		select * from mi_blog where mi_blog_id=#{blogId}
+	</select>
+	
+
+	<select id="getBlogsAll" resultType="cc.guoxingnan.mixinan.entity.Blog">
+		select * from mi_blog
+	</select>
+	
+	
+	<!-- 根据 页数、条数，查找blog列表 -->
+	<select id="getBlogsByPage" parameterType="Map" resultType="cc.guoxingnan.mixinan.entity.Blog">
+		select * from mi_blog order by mi_blog_create_time desc limit #{pageno},#{blogno}
+	</select>
+	
+	
+	<!-- 查询blog总数 -->
+	<select id="getBlogsCount" resultType="int">
+		select count(mi_blog_id) from mi_blog
+	</select>
+	
+	<select id="searchBlogs" parameterType="String" resultType="cc.guoxingnan.mixinan.entity.Blog">
+		select * from mi_blog where mi_blog_text like #{kw}
+	</select>
+
+	<select id="getBlogsByUserId" parameterType="int" resultType="cc.guoxingnan.mixinan.entity.Blog">
+		select * from mi_blog where mi_user_id=#{userId}
+	</select>
+	
+	<delete id="deleteBlog" parameterType="int">
+		delete from mi_blog where mi_blog_id=#{blogId}
+	</delete>
+	
+	<update id="updateBlog" parameterType="cc.guoxingnan.mixinan.entity.Blog">
+		update mi_blog set 
+			mi_blog_text=#{mi_blog_text},
+			mi_blog_last_modify_time=now()
+		where mi_blog_id=#{mi_blog_id}
+	</update>
+	
+
+</mapper>
